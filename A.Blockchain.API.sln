@@ -5,9 +5,13 @@ VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A.Blockchain.API", "A.Blockchain.API\A.Blockchain.API.csproj", "{7299331F-21CC-4260-892C-DE1058A095FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A.Blockchain.Service", "A.Blockchain.Service\A.Blockchain.Service.csproj", "{24B6659D-732D-47F6-8B0C-72884D372C34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A.Blockchain.Service", "A.Blockchain.Service\A.Blockchain.Service.csproj", "{24B6659D-732D-47F6-8B0C-72884D372C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A.Blockchain.Data", "A.Blockchain.Data\A.Blockchain.Data.csproj", "{376ECB0F-D9B1-4048-89BF-797477933A71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A.Blockchain.Data", "A.Blockchain.Data\A.Blockchain.Data.csproj", "{376ECB0F-D9B1-4048-89BF-797477933A71}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "A.Blockchain.Core", "A.Blockchain.Core\A.Blockchain.Core.csproj", "{65E8AF69-980B-4449-84B3-5661AD172D5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A.Blockchain.Infrastructure", "A.Blockchain.Infrastructure\A.Blockchain.Infrastructure.csproj", "{DE7AD916-8DD1-4220-8311-2833A59E07F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{376ECB0F-D9B1-4048-89BF-797477933A71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{376ECB0F-D9B1-4048-89BF-797477933A71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{376ECB0F-D9B1-4048-89BF-797477933A71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65E8AF69-980B-4449-84B3-5661AD172D5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65E8AF69-980B-4449-84B3-5661AD172D5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65E8AF69-980B-4449-84B3-5661AD172D5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65E8AF69-980B-4449-84B3-5661AD172D5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE7AD916-8DD1-4220-8311-2833A59E07F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE7AD916-8DD1-4220-8311-2833A59E07F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE7AD916-8DD1-4220-8311-2833A59E07F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE7AD916-8DD1-4220-8311-2833A59E07F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
