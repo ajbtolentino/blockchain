@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace A.Blockchain.Data.Repositories
 {
-    public class BlockchainRepository : IBlockchainRepository
+    public class BlockchainRepository : RepositoryBase<Block>, IBlockchainRepository
     {
         public void Create(Block block)
         {
-            Console.WriteLine("Block created");
+            throw new NotImplementedException();
         }
     }
 }

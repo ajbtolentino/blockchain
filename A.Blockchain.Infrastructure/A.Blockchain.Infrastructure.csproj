@@ -16,4 +16,8 @@
     <ProjectReference Include="..\A.Blockchain.Service\A.Blockchain.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Enum\" />
+  </ItemGroup>
+
 </Project>

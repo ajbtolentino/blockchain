@@ -6,17 +6,17 @@ namespace A.Blockchain.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BlockController : ControllerBase
+    public class BlockchainController : ControllerBase
     {
         private readonly IBlockchainService blockchainService;
 
-        public BlockController(IBlockchainService blockchainService)
+        public BlockchainController(IBlockchainService blockchainService)
         {
             this.blockchainService = blockchainService;
         }
 
         [HttpGet]
-        [Route("/create")]
+        [Route("/creategenesis")]
         public IActionResult Create()
         {
             this.blockchainService.CreateGenesisBlock();
