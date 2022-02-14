@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace A.Blockchain.Core.Interfaces.Repository
 {
-    public interface IBlockchainRepository
+    public interface IBlockRepository : IRepository<Block>
     {
-        void Create(Block block);
+        
     }
 }

@@ -15,7 +15,13 @@ namespace A.Blockchain.Infrastructure.Extensions
     {
         public static void UseBlockchainDependencies(this IServiceCollection services)
         {
-            services.AddTransient<IBlockchainRepository, BlockchainRepository>();
+            //Add db context
+            //services.AddSingleton<IDbContext, SqlDbContext>();
+
+            //Add repositories
+            services.AddTransient<IBlockRepository, BlockRepository>();
+
+            //Add services
             services.AddTransient<IBlockchainService, BlockchainService>();
         }
     }

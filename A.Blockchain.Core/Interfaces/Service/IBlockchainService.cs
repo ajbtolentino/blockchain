@@ -1,4 +1,5 @@
-﻿using System;
+﻿using A.Blockchain.Core.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,10 @@ namespace A.Blockchain.Core.Interfaces.Service
 {
     public interface IBlockchainService
     {
-        void CreateGenesisBlock();
+        BlockDTO CreateGenesisBlock();
+
+        BlockDTO GetLatestBlock();
+
+        BlockDTO AddBlock(BlockDTO block);
     }
 }

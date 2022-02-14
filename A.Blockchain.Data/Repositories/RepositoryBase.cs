@@ -9,17 +9,22 @@ namespace A.Blockchain.Data.Repositories
 {
     public class RepositoryBase<T> : IRepository<T>
     {
-        public void Add(T entity)
+        public T Add(T entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(T entity)
+        public T Delete(T entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(T entity)
+        public IEnumerable<T> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Update(T entity)
         {
             throw new NotImplementedException();
         }

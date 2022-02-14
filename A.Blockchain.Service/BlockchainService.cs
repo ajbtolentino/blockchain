@@ -1,4 +1,5 @@
 ﻿using A.Blockchain.Core.Domain;
+using A.Blockchain.Core.DTO;
 using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
 using System;
@@ -11,16 +12,30 @@ namespace A.Blockchain.Service
 {
     public class BlockchainService : IBlockchainService
     {
-        private readonly IBlockchainRepository blockchainRepository;
+        private readonly IBlockRepository blockchainRepository;
 
-        public BlockchainService(IBlockchainRepository blockchainRepository)
+        public BlockchainService(IBlockRepository blockchainRepository)
         {
             this.blockchainRepository = blockchainRepository;
         }
 
-        public void CreateGenesisBlock()
+        public BlockDTO AddBlock(BlockDTO block)
         {
-            blockchainRepository.Create(new Block());
+            throw new NotImplementedException();
+        }
+
+        public BlockDTO CreateGenesisBlock()
+        {
+            var result = this.blockchainRepository.Add(new Block("",""));
+
+            return new BlockDTO("Test", "Test");
+        }
+
+        public BlockDTO GetLatestBlock()
+        {
+            var blocks = this.blockchainRepository.GetAll().ElementAt(0);
+
+            return new BlockDTO(blocks.Hash, blocks.PreviousHash);
         }
     }
 }

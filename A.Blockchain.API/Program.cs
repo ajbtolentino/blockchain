@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Add dependencies
 builder.Services.UseBlockchainDependencies();
 
 var app = builder.Build();

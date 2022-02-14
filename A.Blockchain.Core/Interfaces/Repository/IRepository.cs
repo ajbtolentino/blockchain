@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace A.Blockchain.Core.Interfaces.Repository
+﻿namespace A.Blockchain.Core.Interfaces.Repository
 {
     public interface IRepository<T>
     {
-        void Add(T entity);
-        void Update(T entity);  
-        void Delete(T entity);
+        IEnumerable<T> GetAll();
+        T Add(T entity);
+        T Update(T entity);
+        T Delete(T entity);
     }
 }
