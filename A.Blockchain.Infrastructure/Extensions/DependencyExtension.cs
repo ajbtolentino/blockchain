@@ -19,7 +19,7 @@ namespace A.Blockchain.Infrastructure.Extensions
             //services.AddSingleton<IDbContext, SqlDbContext>();
 
             //Add repositories
-            services.AddTransient<IBlockRepository, BlockRepository>();
+            services.AddSingleton<IBlockRepository, BlockRepository>();
 
             //Add services
             services.AddTransient<IBlockchainService, BlockchainService>();

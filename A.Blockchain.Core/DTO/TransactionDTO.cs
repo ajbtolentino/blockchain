@@ -8,7 +8,7 @@ namespace A.Blockchain.Core.DTO
 {
     public class TransactionDTO : DTOBase
     {
-        public string BlockId { get; set; }
+        public int BlockId { get; set; }
         public DateTime DateTime { get; set; }
     }
 }

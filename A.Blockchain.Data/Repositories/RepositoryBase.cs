@@ -1,4 +1,5 @@
-﻿using A.Blockchain.Core.Interfaces.Repository;
+﻿using A.Blockchain.Core.Domain;
+using A.Blockchain.Core.Interfaces.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,13 @@ namespace A.Blockchain.Data.Repositories
 {
     public class RepositoryBase<T> : IRepository<T>
     {
+        static List<T> _repositoryData = new List<T>();
+
         public T Add(T entity)
         {
-            throw new NotImplementedException();
+            _repositoryData.Add(entity);
+
+            return entity;
         }
 
         public T Delete(T entity)
@@ -21,7 +26,7 @@ namespace A.Blockchain.Data.Repositories
 
         public IEnumerable<T> GetAll()
         {
-            throw new NotImplementedException();
+            return _repositoryData;
         }
 
         public T Update(T entity)

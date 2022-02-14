@@ -10,6 +10,19 @@ namespace A.Blockchain.Data.Repositories
 {
     public class BlockRepository : RepositoryBase<Block>, IBlockRepository
     {
-        
+        public Block CreateGenesisBlock()
+        {
+            var result = new Block("", "");
+            result.Id = 1;
+
+            base.Add(result);
+
+            return result;
+        }
+
+        public Block GetLatestBlock()
+        {
+            return base.GetAll().ElementAt(0);
+        }
     }
 }

@@ -19,23 +19,42 @@ namespace A.Blockchain.Service
             this.blockchainRepository = blockchainRepository;
         }
 
-        public BlockDTO AddBlock(BlockDTO block)
+        public ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> requestBlockDTO)
         {
-            throw new NotImplementedException();
+            var block = new Block(requestBlockDTO.Data.Hash, requestBlockDTO.Data.PreviousHash)
+            {
+                Data = requestBlockDTO.Data.Data
+            };
+
+            var result = this.blockchainRepository.Add(block);
+
+            return new ResponseDTO<BlockDTO>("Success", requestBlockDTO.Data);
         }
 
-        public BlockDTO CreateGenesisBlock()
+        public ResponseDTO<bool> CreateGenesisBlock()
         {
-            var result = this.blockchainRepository.Add(new Block("",""));
+            var result = this.blockchainRepository.CreateGenesisBlock();
 
-            return new BlockDTO("Test", "Test");
+            return new ResponseDTO<bool>("Success", true);
         }
 
-        public BlockDTO GetLatestBlock()
+        public ResponseDTO<IEnumerable<BlockDTO>> GetAll()
         {
-            var blocks = this.blockchainRepository.GetAll().ElementAt(0);
+            var result = this.blockchainRepository.GetAll().Select(_ => new BlockDTO(_.Hash, _.PreviousHash)
+            {
 
-            return new BlockDTO(blocks.Hash, blocks.PreviousHash);
+            });
+
+            return new ResponseDTO<IEnumerable<BlockDTO>>("Success", result);
+        }
+
+        public ResponseDTO<BlockDTO> GetLatestBlock()
+        {
+            var blocks = this.blockchainRepository.GetLatestBlock();
+
+            var blockDTO = new BlockDTO(blocks.Hash, blocks.PreviousHash);
+
+            return new ResponseDTO<BlockDTO>("Success", blockDTO);
         }
     }
 }
