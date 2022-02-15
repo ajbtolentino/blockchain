@@ -13,48 +13,39 @@ namespace A.Blockchain.Service
     public class BlockchainService : IBlockchainService
     {
         private readonly IBlockRepository blockchainRepository;
+        private readonly ITransactionRepository transactionRepository;
 
-        public BlockchainService(IBlockRepository blockchainRepository)
+        public BlockchainService(IBlockRepository blockchainRepository, ITransactionRepository transactionRepository)
         {
             this.blockchainRepository = blockchainRepository;
+            this.transactionRepository = transactionRepository;
         }
 
-        public ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> requestBlockDTO)
+        public ResponseDTO<TransactionDTO> AddTransaction(RequestDTO<TransactionDTO> block)
         {
-            var block = new Block(requestBlockDTO.Data.Hash, requestBlockDTO.Data.PreviousHash)
-            {
-                Data = requestBlockDTO.Data.Data
-            };
+            var result = this.transactionRepository.Add(new Transaction());
 
-            var result = this.blockchainRepository.Add(block);
-
-            return new ResponseDTO<BlockDTO>("Success", requestBlockDTO.Data);
-        }
-
-        public ResponseDTO<bool> CreateGenesisBlock()
-        {
-            var result = this.blockchainRepository.CreateGenesisBlock();
-
-            return new ResponseDTO<bool>("Success", true);
+            return new ResponseDTO<TransactionDTO>("Success", new TransactionDTO());
         }
 
         public ResponseDTO<IEnumerable<BlockDTO>> GetAll()
         {
-            var result = this.blockchainRepository.GetAll().Select(_ => new BlockDTO(_.Hash, _.PreviousHash)
-            {
-
-            });
+            var result = this.blockchainRepository.GetAll().Select(_ => 
+                                new BlockDTO(_.Hash, _.PreviousHash, _.Timestamp, _.Transactions.Select(__ => new TransactionDTO ())));
 
             return new ResponseDTO<IEnumerable<BlockDTO>>("Success", result);
         }
 
         public ResponseDTO<BlockDTO> GetLatestBlock()
         {
-            var blocks = this.blockchainRepository.GetLatestBlock();
+            var result = this.blockchainRepository.GetLatestBlock();
 
-            var blockDTO = new BlockDTO(blocks.Hash, blocks.PreviousHash);
+            return new ResponseDTO<BlockDTO>("Success", new BlockDTO(result.Hash, result.PreviousHash, result.Timestamp));
+        }
 
-            return new ResponseDTO<BlockDTO>("Success", blockDTO);
+        public ResponseDTO<BlockDTO> Mine(RequestDTO<BlockDTO> block)
+        {
+            throw new NotImplementedException();
         }
     }
 }

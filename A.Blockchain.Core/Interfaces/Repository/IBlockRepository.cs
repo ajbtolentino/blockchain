@@ -9,7 +9,6 @@ namespace A.Blockchain.Core.Interfaces.Repository
 {
     public interface IBlockRepository : IRepository<Block>
     {
-        Block CreateGenesisBlock();
         Block GetLatestBlock();
     }
 }

@@ -16,20 +16,11 @@ namespace A.Blockchain.API.Controllers
             this.blockchainService = blockchainService;
         }
 
-        [HttpGet]
-        [Route("/creategenesis")]
-        public IActionResult CreateGenesisBlock()
-        {
-            var result = this.blockchainService.CreateGenesisBlock();
-
-            return Ok(result);
-        }
-
         [HttpPost]
-        [Route("/addBlock")]
-        public IActionResult AddBlock(BlockDTO block)
+        [Route("/addTransaction")]
+        public IActionResult AddTransaction(TransactionDTO request)
         {
-            var result = this.blockchainService.AddBlock(new RequestDTO<BlockDTO>(block, string.Empty, DateTime.Now));
+            var result = this.blockchainService.AddTransaction(new RequestDTO<TransactionDTO>(request, string.Empty, DateTime.Now));
 
             return Ok(result);
         }

@@ -1,4 +1,5 @@
-﻿using A.Blockchain.Core.Interfaces.Repository;
+﻿using A.Blockchain.Core.Domain;
+using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
 using A.Blockchain.Data.Repositories;
 using A.Blockchain.Service;
@@ -20,6 +21,8 @@ namespace A.Blockchain.Infrastructure.Extensions
 
             //Add repositories
             services.AddSingleton<IBlockRepository, BlockRepository>();
+            services.AddSingleton<ITransactionRepository, TransactionRepository>();
+
 
             //Add services
             services.AddTransient<IBlockchainService, BlockchainService>();

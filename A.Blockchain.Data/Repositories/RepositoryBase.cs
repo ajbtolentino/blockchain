@@ -10,7 +10,7 @@ namespace A.Blockchain.Data.Repositories
 {
     public class RepositoryBase<T> : IRepository<T>
     {
-        static List<T> _repositoryData = new List<T>();
+        protected static List<T> _repositoryData = new List<T>();
 
         public T Add(T entity)
         {

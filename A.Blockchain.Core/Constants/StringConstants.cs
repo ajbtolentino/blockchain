@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace A.Blockchain.Data.Repositories
+namespace A.Blockchain.Core.Constants
 {
-    public class TransactionService
+    internal class StringConstants
     {
     }
 }

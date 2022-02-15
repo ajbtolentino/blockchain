@@ -9,12 +9,11 @@ namespace A.Blockchain.Core.Interfaces.Service
 {
     public interface IBlockchainService
     {
-        ResponseDTO<bool> CreateGenesisBlock();
-
+        ResponseDTO<TransactionDTO> AddTransaction(RequestDTO<TransactionDTO> block);
         ResponseDTO<BlockDTO> GetLatestBlock();
 
-        ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> block);
-
         ResponseDTO<IEnumerable<BlockDTO>> GetAll();
+        ResponseDTO<BlockDTO> Mine(RequestDTO<BlockDTO> block);
+
     }
 }
