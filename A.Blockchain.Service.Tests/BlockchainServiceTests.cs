@@ -7,13 +7,6 @@ namespace A.Blockchain.Service.Tests
     [TestClass]
     public class BlockchainServiceTests
     {
-        [TestMethod]
-        public void CreateGenesisBlock()
-        {
-            var blockchainRepositoryMock = new Mock<IBlockRepository>();
-            var blockchainService = new BlockchainService(blockchainRepositoryMock.Object);
-
-            blockchainService.CreateGenesisBlock();
-        }
+      
     }
 }
