@@ -1,4 +1,5 @@
-﻿using A.Blockchain.Core.Domain;
+﻿using A.Blockchain.Core.Constants;
+using A.Blockchain.Core.Domain;
 using A.Blockchain.Core.DTO;
 using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace A.Blockchain.Service
@@ -30,14 +32,34 @@ namespace A.Blockchain.Service
         public ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> blockRequest)
         {
             var previousBlock = this.GetLatestBlock();
-            var previousHash = previousBlock.Hash;
+            var pendingTransactions = this.transactionRepository.GetPendingTransactions();
 
-            var newBlock = this.MineBlock(new BlockDTO(string.Empty, DateTime.Now, previousHash)
+            var newBlock = this.MineBlock(new BlockDTO
             {
-                Id = previousBlock.Id + 1
+                Index = previousBlock.Index + 1,
+                PreviousHash = previousBlock.Hash,
+                Transactions = pendingTransactions.Select(_ => new TransactionDTO
+                {
+                    Amount = _.Amount,
+                    From = _.From,
+                    To = _.To,
+                    Timestamp = _.Timestamp,
+                    State = _.State
+                }),
+                Timestamp = DateTime.UtcNow
             });
 
-            blockchainRepository.Add(new Block(newBlock.Id, newBlock.Hash, newBlock.PreviousHash, newBlock.Timestamp, newBlock.Nonce));
+            blockchainRepository.Add(new Block
+            {
+                Index = newBlock.Index,
+                Hash = newBlock.Hash,
+                PreviousHash = newBlock.PreviousHash,
+                Nonce = newBlock.Nonce,
+                Timestamp= newBlock.Timestamp,
+                Transactions = pendingTransactions
+            });
+
+            //Update transaction state
 
             return new ResponseDTO<BlockDTO>("Success", newBlock);
         }
@@ -49,20 +71,54 @@ namespace A.Blockchain.Service
 
             do
             {
-                block.Hash = CalculateHash(block.Id, block.PreviousHash, block.Timestamp, block.Nonce);
+                var input = $"{JsonSerializer.Serialize(block)}";
+
+                block.Hash = CalculateHash(input);
                 block.Nonce++;
-            } while (block.Hash.Substring(0, difficulty) != String.Concat(diffString));
+            } while (block.Hash[..difficulty] != String.Concat(diffString));
 
             return block;
         }
 
         private BlockDTO CreateGenesisBlock()
         {
-            var genesisBlock = this.MineBlock(new BlockDTO(CalculateHash(0, string.Empty, DateTime.UtcNow, 0), DateTime.UtcNow));
+            var timestamp = DateTime.UtcNow;
 
-            blockchainRepository.Add(new Block(0, genesisBlock.Hash, genesisBlock.PreviousHash, genesisBlock.Timestamp, genesisBlock.Nonce));
+            var genesisBlock = new BlockDTO
+            {
+                Timestamp = timestamp,
+                Transactions = new List<TransactionDTO>() {
+                    new TransactionDTO
+                    {
+                        Amount = 1000,
+                        To = "Allan",
+                        From = "Allan",
+                        Timestamp = timestamp,
+                        State = TransactionState.SUCCESS
+                    } 
+                }
+            };
 
-            return genesisBlock;
+            var minedGenesisBlock = this.MineBlock(genesisBlock);
+
+            blockchainRepository.Add(new Block
+            {
+                Index = minedGenesisBlock.Index,
+                Hash = minedGenesisBlock.Hash,
+                PreviousHash = minedGenesisBlock.PreviousHash,
+                Nonce = minedGenesisBlock.Nonce,
+                Timestamp = minedGenesisBlock.Timestamp,
+                Transactions = minedGenesisBlock.Transactions.Select(_ => new Transaction
+                {
+                    Amount= _.Amount,
+                    From = _.From,
+                    State = _.State,
+                    Timestamp = _.Timestamp,
+                    To = _.To
+                })
+            });
+
+            return this.FirstOrDefault() ?? throw new Exception("Genesis block not found");
         }
 
         private BlockDTO GetLatestBlock() {
@@ -71,16 +127,15 @@ namespace A.Blockchain.Service
                 return this.CreateGenesisBlock();
             }
 
-            return this.LastOrDefault();
+            return this.LastOrDefault() ?? throw new Exception("Latest block not found");
         }
 
-        private static string CalculateHash(int index, string previousHash, DateTime timestamp, int nonce)
+        //TODO: Better implementation i.e. HashService
+        private static string CalculateHash(string input)
         {
             // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
             {
-                var input = $"{index}{previousHash}{timestamp}{nonce}";
-
                 // ComputeHash - returns byte array  
                 byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
 
@@ -95,9 +150,28 @@ namespace A.Blockchain.Service
             }
         }
 
-        public IEnumerator<BlockDTO> GetEnumerator() => blockchainRepository.GetAll()
-                                                                            .Select(_ => new BlockDTO(_.Id, _.Hash, _.PreviousHash, _.Nonce, _.Timestamp))
-                                                                            .GetEnumerator();
+        public IEnumerator<BlockDTO> GetEnumerator()
+        {
+            foreach(var block in blockchainRepository.GetAll())
+            {
+                yield return new BlockDTO
+                {
+                    Index = block.Index,
+                    Hash = block.Hash,
+                    PreviousHash = block.PreviousHash,
+                    Nonce = block.Nonce,
+                    Timestamp = block.Timestamp,
+                    Transactions = block.Transactions.Select(_ => new TransactionDTO
+                    {
+                        Amount = _.Amount,
+                        From = _.From,
+                        Timestamp = _.Timestamp,
+                        To = _.To,
+                        State = _.State
+                    })
+                };
+            }
+        }
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }

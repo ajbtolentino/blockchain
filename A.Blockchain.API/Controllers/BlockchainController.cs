@@ -21,7 +21,7 @@ namespace A.Blockchain.API.Controllers
         public IActionResult AddBlock()
         {
             var result = this.blockchainService.AddBlock(new RequestDTO<BlockDTO>(new BlockDTO(), string.Empty, DateTime.UtcNow));
-            return Ok();
+            return Ok(result);
         }
 
         [HttpGet]

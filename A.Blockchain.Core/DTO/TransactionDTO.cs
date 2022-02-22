@@ -1,4 +1,5 @@
-﻿using System;
+﻿using A.Blockchain.Core.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,6 @@ namespace A.Blockchain.Core.DTO
         public string To { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public DateTime Timestamp { get; set; }
+        public TransactionState State { get; set; }
     }
 }

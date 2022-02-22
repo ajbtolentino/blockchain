@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace A.Blockchain.Core.DTO
+namespace A.Blockchain.Core.Constants
 {
-    public class DTOBase
+    public enum TransactionState
     {
-        public int Index { get; set; }
+        PENDING,
+        SUCCESS,
+        FAILED
     }
 }

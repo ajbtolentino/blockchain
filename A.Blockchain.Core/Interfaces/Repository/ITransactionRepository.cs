@@ -9,5 +9,6 @@ namespace A.Blockchain.Core.Interfaces.Repository
 {
     public interface ITransactionRepository : IRepository<Transaction>
     {
+        IEnumerable<Transaction> GetPendingTransactions();
     }
 }
