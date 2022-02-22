@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace A.Blockchain.Core.DTO
+namespace A.Blockchain.Core.Domain
 {
-    public class DTOBase
+    public class BaseDomainObject
     {
+        public int Id { get; set; }
     }
 }

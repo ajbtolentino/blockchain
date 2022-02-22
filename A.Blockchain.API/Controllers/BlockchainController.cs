@@ -17,20 +17,21 @@ namespace A.Blockchain.API.Controllers
         }
 
         [HttpGet]
-        [Route("/addBlock")]
-        public IActionResult AddBlock()
-        {
-            var result = this.blockchainService.AddBlock(new RequestDTO<BlockDTO>(new BlockDTO(), string.Empty, DateTime.UtcNow));
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("/getAll")]
+        [Route("/get")]
         public IActionResult GetAll()
         {
             var data = this.blockchainService.ToList();
 
             return Ok(new ResponseDTO<IEnumerable<BlockDTO>>("Success", data));
+        }
+
+        [HttpPost]
+        [Route("/add")]
+        public IActionResult AddBlock(BlockDTO block)
+        {
+            var result = this.blockchainService.AddBlock(new RequestDTO<BlockDTO>(block, string.Empty, DateTime.UtcNow));
+
+            return Ok(result);
         }
     }
 }

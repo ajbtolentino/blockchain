@@ -1,10 +1,15 @@
-﻿namespace A.Blockchain.Core.Interfaces.Repository
+﻿using A.Blockchain.Core.Domain;
+
+namespace A.Blockchain.Core.Interfaces.Repository
 {
-    public interface IRepository<T>
+    public interface IRepository<T> where T : BaseDomainObject
     {
-        IEnumerable<T> GetAll();
         T Add(T entity);
+        bool Delete(T entity);
         T Update(T entity);
-        T Delete(T entity);
+
+        IEnumerable<T> GetAll();
+        IEnumerable<T> AddRange(IEnumerable<T> entities);
+        IEnumerable<T> UpdateRange(IEnumerable<T> entities);
     }
 }

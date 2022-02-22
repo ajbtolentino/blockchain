@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace A.Blockchain.Core.DTO
+namespace A.Blockchain.Service
 {
-    public class DTOBase
+    internal class MinerService
     {
     }
 }

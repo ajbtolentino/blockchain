@@ -9,6 +9,7 @@ namespace A.Blockchain.Core.Interfaces.Service
 {
     public interface IBlockchainService : IEnumerable<BlockDTO>
     {
-        ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> blockRequest);
+        ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> block);
+        ResponseDTO<TransactionDTO> AddTransaction(RequestDTO<TransactionDTO> transaction);
     }
 }
