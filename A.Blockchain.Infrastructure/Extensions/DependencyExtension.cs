@@ -25,7 +25,7 @@ namespace A.Blockchain.Infrastructure.Extensions
 
 
             //Add services
-            services.AddTransient<IBlockchainService, BlockchainService>();
+            services.AddTransient<IBlockchainService, ProofOfWorkService>();
         }
     }
 }

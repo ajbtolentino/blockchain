@@ -16,31 +16,21 @@ namespace A.Blockchain.API.Controllers
             this.blockchainService = blockchainService;
         }
 
-        [HttpPost]
-        [Route("/addTransaction")]
-        public IActionResult AddTransaction(TransactionDTO request)
-        {
-            var result = this.blockchainService.AddTransaction(new RequestDTO<TransactionDTO>(request, string.Empty, DateTime.Now));
-
-            return Ok(result);
-        }
-
         [HttpGet]
-        [Route("/getLatestBlock")]
-        public IActionResult GetLatestBlock()
+        [Route("/addBlock")]
+        public IActionResult AddBlock()
         {
-            var result = this.blockchainService.GetLatestBlock();
-
-            return Ok(result);
+            var result = this.blockchainService.AddBlock(new RequestDTO<BlockDTO>(new BlockDTO(), string.Empty, DateTime.UtcNow));
+            return Ok();
         }
 
         [HttpGet]
         [Route("/getAll")]
         public IActionResult GetAll()
         {
-            var result = this.blockchainService.GetAll();
+            var data = this.blockchainService.ToList();
 
-            return Ok(result);
+            return Ok(new ResponseDTO<IEnumerable<BlockDTO>>("Success", data));
         }
     }
 }
