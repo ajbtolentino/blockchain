@@ -12,7 +12,7 @@ namespace A.Blockchain.Core.Domain
         public string Hash { get; set; }
         public string PreviousHash { get; set; }
         public int Nonce { get; set; }
-        public IEnumerable<Transaction> Transactions { get; set; } = new List<Transaction>();
+        public List<Transaction> Transactions { get; set; } = new List<Transaction>();
         public DateTime Timestamp { get; set; }
     }
 }

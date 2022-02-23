@@ -18,9 +18,11 @@ namespace A.Blockchain.API.Controllers
 
         [HttpGet]
         [Route("/balance")]
-        public IActionResult Balance()
+        public IActionResult Balance(string address)
         {
-            return Ok();
+            var result = this.walletService.GetBalance(address);
+
+            return Ok(result);
         }
 
         [HttpPost]

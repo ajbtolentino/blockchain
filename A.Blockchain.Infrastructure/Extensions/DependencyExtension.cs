@@ -1,6 +1,8 @@
 ﻿using A.Blockchain.Core.Domain;
+using A.Blockchain.Core.Interfaces.DbContext;
 using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
+using A.Blockchain.Data.DbContext;
 using A.Blockchain.Data.Repositories;
 using A.Blockchain.Service;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +23,7 @@ namespace A.Blockchain.Infrastructure.Extensions
 
             //Add repositories
             services.AddSingleton<IBlockRepository, BlockRepository>();
-            services.AddSingleton<ITransactionRepository, TransactionRepository>();
+            services.AddSingleton<IRepository<Transaction>, GenericRepository<Transaction>>();
 
 
             //Add services
@@ -30,6 +32,9 @@ namespace A.Blockchain.Infrastructure.Extensions
             services.AddTransient<INodeService, NodeService>();
             services.AddTransient<IWalletService, WalletService>();
             services.AddTransient<IHashService, HashService>();
+
+            //DbContext
+            services.AddTransient<IBlockchainDbContext, BlockchainLiteDbContext>();
         }
     }
 }

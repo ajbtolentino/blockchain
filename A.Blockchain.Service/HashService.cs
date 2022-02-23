@@ -14,7 +14,7 @@ namespace A.Blockchain.Service
     {
         public BlockDTO CalculateHash(BlockDTO block)
         {
-            var difficulty = 5;
+            var difficulty = 3;
             var diffString = new string[difficulty];
 
             Array.Fill(diffString, "0", 0, difficulty);
@@ -32,7 +32,7 @@ namespace A.Blockchain.Service
                     block.Nonce++;
                 } while (val[..difficulty] != String.Concat(diffString));
 
-                block.Hash = val;
+                block.Hash = val.ToLower();
             }
 
             return block;

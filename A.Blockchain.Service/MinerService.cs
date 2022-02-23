@@ -16,21 +16,21 @@ namespace A.Blockchain.Service
     public class MinerService : IMinerService
     {
         private readonly IBlockRepository blockRepository;
-        private readonly ITransactionRepository transactionRepository;
+        private readonly IRepository<Transaction> pendingTransactionRepository;
         private readonly IHashService hashService;
 
-        public MinerService(IBlockRepository blockRepository, 
-                            ITransactionRepository transactionRepository,
+        public MinerService(IBlockRepository blockRepository,
+                            IRepository<Transaction> transactionRepository,
                             IHashService hashService)
         {
             this.blockRepository = blockRepository;
-            this.transactionRepository = transactionRepository;
+            this.pendingTransactionRepository = transactionRepository;
             this.hashService = hashService;
         }
 
         public ResponseDTO<BlockDTO> Mine()
         {
-            var pendingTransactions = this.transactionRepository.GetPendingTransactions();
+            var pendingTransactions = this.pendingTransactionRepository.GetAll().Take(2);
 
             if (!pendingTransactions.Any()) return new ResponseDTO<BlockDTO>("No pending transactions", null);
 
@@ -44,6 +44,7 @@ namespace A.Blockchain.Service
                 PreviousHash = latestBlock.Hash,
                 Transactions = pendingTransactions.Select(_ => new TransactionDTO
                 {
+                    Id = _.Id,
                     Amount = _.Amount,
                     From = _.From,
                     To = _.To,
@@ -54,31 +55,16 @@ namespace A.Blockchain.Service
 
             block = this.hashService.CalculateHash(block);
 
-            var newBlock = this.blockRepository.Add(new Block
+            return new ResponseDTO<BlockDTO>("Success", new BlockDTO
             {
                 Hash = block.Hash,
                 Height = block.Height,
-                Nonce = block.Nonce,
-                PreviousHash= block.PreviousHash,
-                Timestamp = block.Timestamp,
-                Transactions = block.Transactions.Select(_ => new Transaction
-                {
-                    Amount= _.Amount,
-                    From= _.From,
-                    Timestamp= _.Timestamp,
-                    To = _.To
-                })
-            });
-
-            return new ResponseDTO<BlockDTO>("Success", new BlockDTO
-            {
-                Hash = newBlock.Hash,
-                Height = newBlock.Height,
-                Nonce= newBlock.Nonce,
-                PreviousHash = newBlock.PreviousHash,
+                Nonce= block.Nonce,
+                PreviousHash = block.PreviousHash,
                 Timestamp = block.Timestamp,
                 Transactions = block.Transactions.Select(_ => new TransactionDTO
                 {
+                    Id= _.Id,
                     Amount = _.Amount,
                     From = _.From,
                     Timestamp = _.Timestamp,

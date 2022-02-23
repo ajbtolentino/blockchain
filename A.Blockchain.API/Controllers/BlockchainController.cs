@@ -26,10 +26,19 @@ namespace A.Blockchain.API.Controllers
         }
 
         [HttpGet]
-        [Route("/get")]
-        public IActionResult GetAll()
+        [Route("/getAllBlocks")]
+        public IActionResult GetAllBlocks()
         {
             var data = this.blockchainService.GetAllBlocks();
+
+            return Ok(data);
+        }
+
+        [HttpGet]
+        [Route("/getAllPendingTransactions")]
+        public IActionResult GetAllPendingTransactions()
+        {
+            var data = this.blockchainService.GetPendingTransactions();
 
             return Ok(data);
         }

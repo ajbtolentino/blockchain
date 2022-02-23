@@ -23,7 +23,7 @@ namespace A.Blockchain.Service
             var latestBlock = blockRepository.GetLatestBlock();
 
             if(latestBlock == null) return new ResponseDTO<bool>("Latest block not found", false);
-            if (latestBlock.Hash == block.Data.Hash) return new ResponseDTO<bool>("Success", true);
+            if (latestBlock.Hash == block.Data.PreviousHash) return new ResponseDTO<bool>("Success", true);
 
             return new ResponseDTO<bool>("Invalid block", false);
         }

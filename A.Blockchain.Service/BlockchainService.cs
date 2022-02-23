@@ -9,18 +9,18 @@ namespace A.Blockchain.Service
     public class BlockchainService : IBlockchainService
     {
         private readonly IBlockRepository blockRepository;
-        private readonly ITransactionRepository transactionRepository;
+        private readonly IRepository<Transaction> pendingTransactionRepository;
         
         private readonly IHashService hashService;
         private readonly INodeService nodeService;
 
         public BlockchainService(IBlockRepository blockchainRepository, 
-                                 ITransactionRepository transactionRepository,
+                                 IRepository<Transaction> pendingTransactionRepository,
                                  IHashService hashService,
                                  INodeService nodeService)
         {
             this.blockRepository = blockchainRepository;
-            this.transactionRepository = transactionRepository;
+            this.pendingTransactionRepository = pendingTransactionRepository;
 
             this.hashService = hashService;
             this.nodeService = nodeService;
@@ -68,14 +68,38 @@ namespace A.Blockchain.Service
                 Timestamp = block.RequestedDate,
                 Transactions = block.Data.Transactions.Select(_ => new Transaction
                 {
+                    Id = _.Id,
                     Amount = _.Amount,
                     From = _.From,
                     Timestamp = _.Timestamp,
                     To = _.To
-                })
+                }).ToList()
             });
 
-            return new ResponseDTO<BlockDTO>("Success", this.GetBlockByHash(newBlock.Hash));
+            foreach(var transaction in block.Data.Transactions)
+            {
+                this.pendingTransactionRepository.Delete(new Transaction
+                {
+                    Id = transaction.Id
+                });
+            }
+
+            return new ResponseDTO<BlockDTO>("Success", new BlockDTO
+            {
+                Hash = newBlock.Hash,
+                Height = newBlock.Height,
+                Nonce = newBlock.Nonce,
+                PreviousHash = newBlock.PreviousHash,
+                Timestamp = newBlock.Timestamp,
+                Transactions = newBlock.Transactions.Select(_ => new TransactionDTO
+                {
+                    Id = _.Id,
+                    Amount = _.Amount,
+                    From = _.From,
+                    Timestamp = _.Timestamp,
+                    To = _.To
+                }).ToList()
+            });
         }
 
         public ResponseDTO<IEnumerable<BlockDTO>> GetAllBlocks()
@@ -89,6 +113,7 @@ namespace A.Blockchain.Service
                 Timestamp = _.Timestamp,
                 Transactions = _.Transactions.Select(_ => new TransactionDTO
                 {
+                    Id = _.Id,
                     Amount = _.Amount,
                     From = _.From,
                     Timestamp = _.Timestamp,
@@ -113,15 +138,24 @@ namespace A.Blockchain.Service
                 Height = latestBlock.Height,
                 Nonce = latestBlock.Nonce,
                 PreviousHash= latestBlock.PreviousHash,
-                Timestamp = latestBlock.Timestamp
+                Timestamp = latestBlock.Timestamp,
+                Transactions = latestBlock.Transactions.Select(_ => new TransactionDTO
+                {
+                    Id = _.Id,
+                    Amount = _.Amount,
+                    From = _.From,
+                    Timestamp = _.Timestamp,
+                    To = _.To
+                })
             });
         }
 
         public ResponseDTO<IEnumerable<TransactionDTO>> GetPendingTransactions()
         {
-            var pendingTransactions = this.transactionRepository.GetPendingTransactions()
+            var pendingTransactions = this.pendingTransactionRepository.GetAll()
                                                                 .Select(_ => new TransactionDTO
                                                                 {
+                                                                    Id = _.Id,
                                                                     Amount = _.Amount,
                                                                     From = _.From,
                                                                     Timestamp = _.Timestamp,
@@ -129,29 +163,6 @@ namespace A.Blockchain.Service
                                                                 });
 
             return new ResponseDTO<IEnumerable<TransactionDTO>>("Success", pendingTransactions);
-        }
-
-        private BlockDTO GetBlockByHash(string hash)
-        {
-            var block = this.blockRepository.GetAll().FirstOrDefault(_ => _.Hash == hash);
-            var transactions = this.transactionRepository.GetAll().Where(_ => _.Height == block.Height);
-
-            return new BlockDTO
-            {
-                Hash = block.Hash,
-                Height = block.Height,
-                Nonce = block.Nonce,
-                PreviousHash = block.PreviousHash,
-                Timestamp = block.Timestamp,
-                Transactions = transactions.Select(_ =>
-                new TransactionDTO
-                {
-                    Amount = _.Amount,
-                    Timestamp = _.Timestamp,
-                    From = _.From,
-                    To = _.To
-                })
-            };
         }
     }
 }

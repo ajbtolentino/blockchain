@@ -1,4 +1,5 @@
 ﻿using A.Blockchain.Core.Domain;
+using A.Blockchain.Core.Interfaces.DbContext;
 using A.Blockchain.Core.Interfaces.Repository;
 using System;
 using System.Collections.Generic;
@@ -8,13 +9,16 @@ using System.Threading.Tasks;
 
 namespace A.Blockchain.Data.Repositories
 {
-    public class BlockRepository : RepositoryBase<Block>, IBlockRepository
+    public class BlockRepository : GenericRepository<Block>, IBlockRepository
     {
+        public BlockRepository(IBlockchainDbContext dbContext)
+            : base(dbContext) { }
+
         public Block GetLatestBlock()
         {
             if (!base.GetAll().Any()) return null;
 
-            return base.GetAll().ElementAt(0);
+            return base.GetAll().LastOrDefault();
         }
     }
 }
