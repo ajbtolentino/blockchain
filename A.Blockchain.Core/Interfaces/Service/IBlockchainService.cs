@@ -7,9 +7,16 @@ using System.Threading.Tasks;
 
 namespace A.Blockchain.Core.Interfaces.Service
 {
-    public interface IBlockchainService : IEnumerable<BlockDTO>
+    public interface IBlockchainService
     {
+        ResponseDTO<bool> Initialize();
+
         ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> block);
-        ResponseDTO<TransactionDTO> AddTransaction(RequestDTO<TransactionDTO> transaction);
+
+        ResponseDTO<BlockDTO> GetLatestBlock();
+
+        ResponseDTO<IEnumerable<BlockDTO>> GetAllBlocks();
+
+        ResponseDTO<IEnumerable<TransactionDTO>> GetPendingTransactions();
     }
 }

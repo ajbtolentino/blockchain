@@ -12,6 +12,8 @@ namespace A.Blockchain.Data.Repositories
     {
         public Block GetLatestBlock()
         {
+            if (!base.GetAll().Any()) return null;
+
             return base.GetAll().ElementAt(0);
         }
     }

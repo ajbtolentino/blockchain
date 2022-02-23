@@ -9,11 +9,11 @@ namespace A.Blockchain.API.Controllers
     [ApiController]
     public class WalletController : ControllerBase
     {
-        private readonly IBlockchainService blockchainService;
+        private readonly IWalletService walletService;
 
-        public WalletController(IBlockchainService blockchainService)
+        public WalletController(IWalletService walletService)
         {
-            this.blockchainService = blockchainService;
+            this.walletService = walletService;
         }
 
         [HttpGet]
@@ -27,12 +27,16 @@ namespace A.Blockchain.API.Controllers
         [Route("/send")]
         public IActionResult Send(SendModel model)
         {
-            var result = this.blockchainService.AddTransaction(new RequestDTO<TransactionDTO>(new TransactionDTO
-            {
-                Amount = model.Amount,
-                From = model.FromAddress,
-                To = model.ToAddress
-            }, string.Empty, DateTime.UtcNow));
+            var result = this.walletService.Send(model.FromAddress, model.ToAddress, model.Amount);
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("/fund")]
+        public IActionResult Fund(FundModel model)
+        {
+            var result = this.walletService.Fund(model.ToAddress, model.Amount);
 
             return Ok(result);
         }

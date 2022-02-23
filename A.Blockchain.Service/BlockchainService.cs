@@ -3,31 +3,63 @@ using A.Blockchain.Core.Domain;
 using A.Blockchain.Core.DTO;
 using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace A.Blockchain.Service
 {
     public class BlockchainService : IBlockchainService
     {
-        private readonly IBlockRepository blockchainRepository;
+        private readonly IBlockRepository blockRepository;
         private readonly ITransactionRepository transactionRepository;
+        
+        private readonly IHashService hashService;
+        private readonly INodeService nodeService;
 
-        public BlockchainService(IBlockRepository blockchainRepository, ITransactionRepository transactionRepository)
+        public BlockchainService(IBlockRepository blockchainRepository, 
+                                 ITransactionRepository transactionRepository,
+                                 IHashService hashService,
+                                 INodeService nodeService)
         {
-            this.blockchainRepository = blockchainRepository;
+            this.blockRepository = blockchainRepository;
             this.transactionRepository = transactionRepository;
+
+            this.hashService = hashService;
+            this.nodeService = nodeService;
+        }
+
+        public ResponseDTO<bool> Initialize()
+        {
+            if (!this.blockRepository.GetAll().Any(_ => _.Height == 0)) this.CreateGenesisBlock();
+
+            return new ResponseDTO<bool>("Success", true);
+        }
+
+        private BlockDTO CreateGenesisBlock()
+        {
+            var block = new BlockDTO
+            {
+                PreviousHash = string.Empty,
+                Timestamp = DateTime.UtcNow
+            };
+
+            block = this.hashService.CalculateHash(block);
+
+            this.blockRepository.Add(new Block
+            {
+                Hash = block.Hash,
+                Nonce = block.Nonce,
+                Timestamp = block.Timestamp
+            });
+
+            return block;
         }
 
         public ResponseDTO<BlockDTO> AddBlock(RequestDTO<BlockDTO> block)
         {
-            var newBlock = this.blockchainRepository.Add(new Block
+            var validationResult = this.nodeService.ValidateBlock(block);
+
+            if (!validationResult.Data) return new ResponseDTO<BlockDTO>(validationResult.Message, null);
+
+            var newBlock = this.blockRepository.Add(new Block
             {
                 Hash = block.Data.Hash,
                 Height = block.Data.Height,
@@ -46,151 +78,63 @@ namespace A.Blockchain.Service
             return new ResponseDTO<BlockDTO>("Success", this.GetBlockByHash(newBlock.Hash));
         }
 
-        public ResponseDTO<TransactionDTO> AddTransaction(RequestDTO<TransactionDTO> transaction)
+        public ResponseDTO<IEnumerable<BlockDTO>> GetAllBlocks()
         {
-            var result = this.transactionRepository.Add(new Transaction
+            var blocks = blockRepository.GetAll().Select(_ => new BlockDTO
             {
-                Amount = transaction.Data.Amount,
-                From = transaction.Data.From,
-                Timestamp = transaction.RequestedDate,
-                To = transaction.Data.To,
-                State = TransactionState.PENDING
-            });
-
-            return new ResponseDTO<TransactionDTO>("Success", new TransactionDTO
-            {
-                Amount = result.Amount,
-                From = result.From,
-                To = result.To,
-                Timestamp = result.Timestamp
-            });
-        }
-
-        //TODO: Move to miner service
-        public ResponseDTO<BlockDTO> Mine()
-        {
-            var pendingTransactions = this.transactionRepository.GetPendingTransactions();
-
-            if (!pendingTransactions.Any()) return new ResponseDTO<BlockDTO>("Failed", null);
-
-            var previousBlock = this.GetLatestBlock();
-
-            var newBlock = new BlockDTO
-            {
-                Height = previousBlock.Height + 1,
-                PreviousHash = previousBlock.Hash,
-                Transactions = pendingTransactions.Select(_ => new TransactionDTO
+                Height = _.Height,
+                Hash = _.Hash,
+                PreviousHash = _.PreviousHash,
+                Nonce = _.Nonce,
+                Timestamp = _.Timestamp,
+                Transactions = _.Transactions.Select(_ => new TransactionDTO
                 {
                     Amount = _.Amount,
                     From = _.From,
-                    To = _.To,
-                    Timestamp = _.Timestamp
-                }),
-                Timestamp = DateTime.UtcNow
-            }.MineBlock(5);
-
-            blockchainRepository.Add(new Block
-            {
-                Height = newBlock.Height,
-                Hash = newBlock.Hash,
-                PreviousHash = newBlock.PreviousHash,
-                Nonce = newBlock.Nonce,
-                Timestamp = newBlock.Timestamp,
-                Transactions = pendingTransactions
+                    Timestamp = _.Timestamp,
+                    To = _.To
+                })
             });
 
-            foreach(var transaction in pendingTransactions)
-            {
-                transaction.BlockIndex = newBlock.Height;
-                transaction.State = TransactionState.SUCCESS;
-            }
-
-            this.transactionRepository.UpdateRange(pendingTransactions);
-            
-            return new ResponseDTO<BlockDTO>("Success", this.GetBlockByHash(newBlock.Hash));
+            return new ResponseDTO<IEnumerable<BlockDTO>>("Success", blocks);
         }
 
-        private BlockDTO CreateGenesisBlock()
+        public ResponseDTO<BlockDTO> GetLatestBlock()
         {
-            var timestamp = DateTime.UtcNow;
+            var blocks = blockRepository.GetAll();
 
-            var genesisBlock = new BlockDTO
+            var latestBlock = blocks.LastOrDefault();
+
+            if (latestBlock == null) return new ResponseDTO<BlockDTO>("Latest block not found", null);
+
+            return new ResponseDTO<BlockDTO>("Success",  new BlockDTO
             {
-                Timestamp = timestamp,
-                Transactions = new List<TransactionDTO>() {
-                    new TransactionDTO
-                    {
-                        Amount = 1000,
-                        To = "Allan",
-                        From = "Allan",
-                        Timestamp = timestamp
-                    }
-                }
-            };
-
-            var minedGenesisBlock = genesisBlock.MineBlock(5);
-
-            blockchainRepository.Add(new Block
-            {
-                Height = minedGenesisBlock.Height,
-                Hash = minedGenesisBlock.Hash,
-                PreviousHash = minedGenesisBlock.PreviousHash,
-                Nonce = minedGenesisBlock.Nonce,
-                Timestamp = minedGenesisBlock.Timestamp
+                Hash = latestBlock.Hash,
+                Height = latestBlock.Height,
+                Nonce = latestBlock.Nonce,
+                PreviousHash= latestBlock.PreviousHash,
+                Timestamp = latestBlock.Timestamp
             });
-
-            transactionRepository.AddRange(minedGenesisBlock.Transactions.Select(_ => new Transaction
-            {
-                Amount = _.Amount,
-                From = _.From,
-                State = TransactionState.SUCCESS,
-                Timestamp = _.Timestamp,
-                To = _.To
-            }));
-
-            return this.FirstOrDefault() ?? throw new Exception("Genesis block not found");
         }
 
-        public IEnumerator<BlockDTO> GetEnumerator()
+        public ResponseDTO<IEnumerable<TransactionDTO>> GetPendingTransactions()
         {
-            foreach (var block in blockchainRepository.GetAll())
-            {
-                var transactions = this.transactionRepository.GetAll().Where(_ => _.BlockIndex == block.Height);
+            var pendingTransactions = this.transactionRepository.GetPendingTransactions()
+                                                                .Select(_ => new TransactionDTO
+                                                                {
+                                                                    Amount = _.Amount,
+                                                                    From = _.From,
+                                                                    Timestamp = _.Timestamp,
+                                                                    To = _.To
+                                                                });
 
-                yield return new BlockDTO
-                {
-                    Height = block.Height,
-                    Hash = block.Hash,
-                    PreviousHash = block.PreviousHash,
-                    Nonce = block.Nonce,
-                    Timestamp = block.Timestamp,
-                    Transactions = transactions.Select(_ => new TransactionDTO
-                    {
-                        Amount = _.Amount,
-                        From = _.From,
-                        Timestamp = _.Timestamp,
-                        To = _.To
-                    })
-                };
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-        private BlockDTO GetLatestBlock()
-        {
-            if (!this.Any())
-            {
-                return this.CreateGenesisBlock();
-            }
-
-            return this.LastOrDefault() ?? throw new Exception("Latest block not found");
+            return new ResponseDTO<IEnumerable<TransactionDTO>>("Success", pendingTransactions);
         }
 
         private BlockDTO GetBlockByHash(string hash)
         {
-            var block = this.FirstOrDefault(_ => _.Hash == hash);
-            var transactions = this.transactionRepository.GetAll().Where(_ => _.BlockIndex == block.Height);
+            var block = this.blockRepository.GetAll().FirstOrDefault(_ => _.Hash == hash);
+            var transactions = this.transactionRepository.GetAll().Where(_ => _.Height == block.Height);
 
             return new BlockDTO
             {

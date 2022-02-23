@@ -26,6 +26,10 @@ namespace A.Blockchain.Infrastructure.Extensions
 
             //Add services
             services.AddTransient<IBlockchainService, BlockchainService>();
+            services.AddTransient<IMinerService, MinerService>();
+            services.AddTransient<INodeService, NodeService>();
+            services.AddTransient<IWalletService, WalletService>();
+            services.AddTransient<IHashService, HashService>();
         }
     }
 }

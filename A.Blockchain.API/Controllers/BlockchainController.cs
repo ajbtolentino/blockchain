@@ -17,12 +17,21 @@ namespace A.Blockchain.API.Controllers
         }
 
         [HttpGet]
+        [Route("/initialize")]
+        public IActionResult Initialize()
+        {
+            var data = this.blockchainService.Initialize();
+
+            return Ok(data);
+        }
+
+        [HttpGet]
         [Route("/get")]
         public IActionResult GetAll()
         {
-            var data = this.blockchainService.ToList();
+            var data = this.blockchainService.GetAllBlocks();
 
-            return Ok(new ResponseDTO<IEnumerable<BlockDTO>>("Success", data));
+            return Ok(data);
         }
 
         [HttpPost]
