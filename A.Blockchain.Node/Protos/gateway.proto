@@ -1,0 +1,12 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "A.Blockchain.Node";
+
+package gateway;
+
+// The greeting service definition.
+service Gateway {
+  // Sends a greeting
+  
+}
+

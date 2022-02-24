@@ -1,17 +1,20 @@
-using A.Blockchain.Miner.Services;
+﻿//using A.Blockchain.Node;
+using Grpc.Net.Client;
 
-var builder = WebApplication.CreateBuilder(args);
+//var from = args[0];
+//var to = args[1];
+//var amount = float.Parse(args[2]);
 
-// Additional configuration is required to successfully run gRPC on macOS.
-// For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 
-// Add services to the container.
-builder.Services.AddGrpc();
+//var channel = GrpcChannel.ForAddress("https://localhost:7068");
+//var client = new Wallet.WalletClient(channel);
 
-var app = builder.Build();
+//for (int i = 0; i < 30; i++)
+//{
+//    var reply = await client.FundAsync(new FundRequest { Amount = amount, From = from, To = to });
 
-// Configure the HTTP request pipeline.
-app.MapGrpcService<GreeterService>();
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+//    Console.WriteLine(reply.Message);
+//    await Task.Delay(1000);
+//}
 
-app.Run();
+Console.WriteLine("Hello world!");

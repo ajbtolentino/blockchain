@@ -1,21 +1,23 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 option csharp_namespace = "A.Blockchain.Node";
 
-package greet;
+package node;
 
 // The greeting service definition.
-service Greeter {
+service Node {
   // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc AddBlock (AddBlockRequest) returns (AddBlockReply);
 }
 
 // The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
+message AddBlockRequest {
+  string from = 1;
+  string to = 2;
+  float amount = 3;
 }
 
 // The response message containing the greetings.
-message HelloReply {
+message AddBlockReply {
   string message = 1;
 }

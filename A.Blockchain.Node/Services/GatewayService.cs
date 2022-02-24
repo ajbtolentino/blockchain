@@ -1,6 +1,6 @@
 ﻿namespace A.Blockchain.Node.Services
 {
-    public class GatewayService
+    public class GatewayService : Gateway.GatewayBase
     {
     }
 }
