@@ -6,7 +6,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <Configurations>Debug;Release;API - Debug;API - Release</Configurations>
+    <Configurations>Debug;Release;API - Debug;API - Release;Miner - Debug;Miner - Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
