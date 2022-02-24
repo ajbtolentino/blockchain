@@ -9,6 +9,6 @@ namespace A.Blockchain.Core.Interfaces.Service
 {
     public interface IHashService
     {
-        BlockDTO CalculateHash(BlockDTO block);
+        string Calculate<T>(T data);
     }
 }

@@ -41,7 +41,19 @@ namespace A.Blockchain.Service
                 Timestamp = DateTime.UtcNow
             };
 
-            block = this.hashService.CalculateHash(block);
+            var difficulty = 3;
+            var diffString = new string[difficulty];
+
+            Array.Fill(diffString, "0", 0, difficulty);
+            var hash = string.Empty;
+
+            do
+            {
+                hash = this.hashService.Calculate(block);
+                block.Nonce++;
+            } while (hash[..difficulty] != String.Concat(diffString));
+
+            block.Hash = hash.ToLower();
 
             this.blockRepository.Add(new Block
             {
