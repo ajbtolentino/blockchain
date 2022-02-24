@@ -1,5 +1,6 @@
 ﻿using A.Blockchain.Core.Domain;
 using A.Blockchain.Core.DTO;
+using A.Blockchain.Core.Interfaces;
 using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
 using System;
@@ -10,12 +11,14 @@ using System.Threading.Tasks;
 
 namespace A.Blockchain.Service
 {
-    public class WalletService : IWalletService
+    public class WalletService : ServiceBase, IWalletService
     {
         private readonly IBlockRepository blockRepository;
         private readonly IRepository<Transaction> pendingTransactionRepository;
 
-        public WalletService(IBlockRepository blockRepository, IRepository<Transaction> transactionRepository)
+        public WalletService(IBlockRepository blockRepository, 
+            IRepository<Transaction> transactionRepository, 
+            IObjectMapper mapper) : base(mapper)
         {
             this.blockRepository = blockRepository;
             this.pendingTransactionRepository = transactionRepository;
@@ -47,13 +50,7 @@ namespace A.Blockchain.Service
                 Timestamp = DateTime.UtcNow
             });
 
-            return new ResponseDTO<TransactionDTO>("Success", new TransactionDTO
-            {
-                Amount = transaction.Amount,
-                Timestamp = transaction.Timestamp,
-                From = transaction.From,
-                To = transaction.To
-            });
+            return new ResponseDTO<TransactionDTO>("Success", this.Map<TransactionDTO>(transaction));
         }
 
         public ResponseDTO<TransactionDTO> Fund(string toAddress, decimal amount)
@@ -66,14 +63,7 @@ namespace A.Blockchain.Service
                 Timestamp = DateTime.UtcNow
             });
 
-            return new ResponseDTO<TransactionDTO>("Success", new TransactionDTO
-            {
-                Id = transaction.Id,
-                Amount = transaction.Amount,
-                Timestamp = transaction.Timestamp,
-                From = transaction.From,
-                To = transaction.To
-            });
+            return new ResponseDTO<TransactionDTO>("Success", this.Map<TransactionDTO>(transaction));
         }
     }
 }

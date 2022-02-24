@@ -1,6 +1,7 @@
 ﻿using A.Blockchain.Core.Constants;
 using A.Blockchain.Core.Domain;
 using A.Blockchain.Core.DTO;
+using A.Blockchain.Core.Interfaces;
 using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
 using System;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace A.Blockchain.Service
 {
-    public class MinerService : IMinerService
+    public class MinerService : ServiceBase, IMinerService
     {
         private readonly IBlockRepository blockRepository;
         private readonly IRepository<Transaction> pendingTransactionRepository;
@@ -21,7 +22,8 @@ namespace A.Blockchain.Service
 
         public MinerService(IBlockRepository blockRepository,
                             IRepository<Transaction> transactionRepository,
-                            IHashService hashService)
+                            IHashService hashService,
+                            IObjectMapper mapper) : base(mapper)
         {
             this.blockRepository = blockRepository;
             this.pendingTransactionRepository = transactionRepository;
@@ -30,26 +32,39 @@ namespace A.Blockchain.Service
 
         public ResponseDTO<BlockDTO> Mine()
         {
-            var pendingTransactions = this.pendingTransactionRepository.GetAll().Take(2);
+            var pendingTransactions = this.pendingTransactionRepository.GetAll()
+                                          .Select(_ => this.Map<TransactionDTO>(_));
 
-            if (!pendingTransactions.Any()) return new ResponseDTO<BlockDTO>("No pending transactions", null);
+            return this.Mine(pendingTransactions);
+        }
 
+
+        public ResponseDTO<BlockDTO> Mine(int[] pendingTransactionIds)
+        {
+            var pendingTransactions = this.pendingTransactionRepository.GetAll()
+                                          .Where(_ => pendingTransactionIds.Contains(_.Id))
+                                          .Select(_ => this.Map<TransactionDTO>(_));
+
+            return this.Mine(pendingTransactions);
+        }
+
+        public ResponseDTO<BlockDTO> Mine(int count)
+        {
+            var pendingTransactions = this.pendingTransactionRepository.GetAll().Take(count)
+                                          .Select(_ => this.Map<TransactionDTO>(_));
+
+            return this.Mine(pendingTransactions);
+        }
+
+        public ResponseDTO<BlockDTO> Mine(IEnumerable<TransactionDTO> transactions)
+        {
             var latestBlock = this.blockRepository.GetLatestBlock();
-
-            if(latestBlock == null) return new ResponseDTO<BlockDTO>("Missing genesis block", null);
 
             var block = new BlockDTO
             {
-                Height = latestBlock.Height + 1,
-                PreviousHash = latestBlock.Hash,
-                Transactions = pendingTransactions.Select(_ => new TransactionDTO
-                {
-                    Id = _.Id,
-                    Amount = _.Amount,
-                    From = _.From,
-                    To = _.To,
-                    Timestamp = _.Timestamp
-                }),
+                Height = latestBlock?.Height + 1 ?? 0,
+                PreviousHash = latestBlock?.Hash ?? string.Empty,
+                Transactions = transactions.Select(_ => this.Map<TransactionDTO>(_)),
                 Timestamp = DateTime.UtcNow
             };
 
@@ -68,22 +83,7 @@ namespace A.Blockchain.Service
 
             block.Hash = hash.ToLower();
 
-            return new ResponseDTO<BlockDTO>("Success", new BlockDTO
-            {
-                Hash = block.Hash,
-                Height = block.Height,
-                Nonce= block.Nonce,
-                PreviousHash = block.PreviousHash,
-                Timestamp = block.Timestamp,
-                Transactions = block.Transactions.Select(_ => new TransactionDTO
-                {
-                    Id= _.Id,
-                    Amount = _.Amount,
-                    From = _.From,
-                    Timestamp = _.Timestamp,
-                    To = _.To
-                })
-            });
+            return new ResponseDTO<BlockDTO>("Success", this.Map<BlockDTO>(block));
         }
     }
 }

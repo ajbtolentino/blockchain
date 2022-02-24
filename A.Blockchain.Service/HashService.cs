@@ -21,7 +21,5 @@ namespace A.Blockchain.Service
                 return Convert.ToHexString(result).ToLower();
             }
         }
-
-
     }
 }

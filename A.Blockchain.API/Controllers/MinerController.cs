@@ -17,9 +17,9 @@ namespace A.Blockchain.API.Controllers
 
         [HttpPost]
         [Route("/mine")]
-        public IActionResult Mine()
+        public IActionResult Mine(int[] transactionIds)
         {
-            var result = this.minerService.Mine();
+            var result = this.minerService.Mine(transactionIds);
 
             return Ok(result);
         }

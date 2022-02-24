@@ -20,12 +20,14 @@ namespace A.Blockchain.Service
 
         public ResponseDTO<bool> ValidateBlock(RequestDTO<BlockDTO> block)
         {
+            if(!block.Data.Transactions.Any()) new ResponseDTO<bool>("No transactions found", false);
+
             var latestBlock = blockRepository.GetLatestBlock();
 
             if(latestBlock == null) return new ResponseDTO<bool>("Latest block not found", false);
-            if (latestBlock.Hash == block.Data.PreviousHash) return new ResponseDTO<bool>("Success", true);
+            if (latestBlock.Hash != block.Data.PreviousHash) new ResponseDTO<bool>("Invalid block", false);
 
-            return new ResponseDTO<bool>("Invalid block", false);
+            return new ResponseDTO<bool>("Success", true); 
         }
     }
 }

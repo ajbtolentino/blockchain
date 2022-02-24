@@ -9,7 +9,6 @@ namespace A.Blockchain.Core.DTO
 {
     public class TransactionDTO : DTOBase
     {
-        public int Id { get; set; }
         public string From { get; set; } = string.Empty;
         public string To { get; set; } = string.Empty;
         public decimal Amount { get; set; }

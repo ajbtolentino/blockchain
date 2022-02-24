@@ -11,10 +11,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using A.Blockchain.Core.Interfaces;
+using A.Blockchain.Infrastructure.Mapper;
 
 namespace A.Blockchain.Infrastructure.Extensions
 {
-    public static class DependencyExtension
+    public static class ServiceCollectionExtensions
     {
         public static void UseBlockchainDependencies(this IServiceCollection services)
         {
@@ -35,6 +38,10 @@ namespace A.Blockchain.Infrastructure.Extensions
 
             //DbContext
             services.AddTransient<IBlockchainDbContext, BlockchainLiteDbContext>();
+
+            //AutoMapper
+            services.AddTransient<IObjectMapper, BlockchainAutoMapper>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
     }
 }

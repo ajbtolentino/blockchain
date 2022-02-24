@@ -10,5 +10,9 @@ namespace A.Blockchain.Core.Interfaces.Service
     public interface IMinerService
     {
         ResponseDTO<BlockDTO> Mine();
+        ResponseDTO<BlockDTO> Mine(int[] transactionIds);
+        ResponseDTO<BlockDTO> Mine(IEnumerable<TransactionDTO> transactions);
+        ResponseDTO<BlockDTO> Mine(int count);
+
     }
 }
