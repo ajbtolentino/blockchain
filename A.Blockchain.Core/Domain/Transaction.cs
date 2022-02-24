@@ -13,5 +13,6 @@ namespace A.Blockchain.Core.Domain
         public string To { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public DateTime Timestamp { get; set; }
+        public string Signature { get; set; } = string.Empty;
     }
 }

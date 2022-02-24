@@ -24,11 +24,10 @@ namespace A.Blockchain.Service
         public ResponseDTO<decimal> GetBalance(string address)
         {
             var blocks = this.blockRepository.GetAll();
+            var pendingTransactions = this.pendingTransactionRepository.GetAll();
 
             var debit = blocks.Sum(_ => _.Transactions.Where(__ => __.From == address).Sum(__ => __.Amount));
             var credit = blocks.Sum(_ => _.Transactions.Where(__ => __.To == address).Sum(__ => __.Amount));
-
-            var pendingTransactions = this.pendingTransactionRepository.GetAll();
 
             var pendingDebit = pendingTransactions.Where(__ => __.From == address).Sum(_ => _.Amount);
             var pendingCredit = pendingTransactions.Where(__ => __.To == address).Sum(_ =>_.Amount);
