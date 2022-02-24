@@ -15,7 +15,7 @@ namespace A.Blockchain.Data.DbContext
 
         public BlockchainLiteDbContext()
         {
-            liteDatabase = new LiteDatabase(@$"Filename=C:\TestBCDb.db; Connection=Shared");
+            liteDatabase = new LiteDatabase(@$"Filename=BlockchainDb.db; Connection=Shared");
 
             liteDatabase.Mapper.Entity<Transaction>().Id(_ => _.Id);
             liteDatabase.Mapper.Entity<Block>().Id(_ => _.Id);
