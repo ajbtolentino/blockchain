@@ -1,4 +1,6 @@
-﻿using A.Blockchain.Core.Interfaces.Service;
+﻿using A.Blockchain.Core.DTO;
+using A.Blockchain.Core.DTO.Block;
+using A.Blockchain.Core.Interfaces.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,20 +10,33 @@ namespace A.Blockchain.API.Controllers
     [ApiController]
     public class MinerController : ControllerBase
     {
+        private readonly INodeService nodeService;
         private readonly IMinerService minerService;
 
-        public MinerController(IMinerService minerService)
+        public MinerController(INodeService nodeService, IMinerService minerService)
         {
+            this.nodeService = nodeService;
             this.minerService = minerService;
         }
 
         [HttpPost]
-        [Route("/mine")]
-        public IActionResult Mine(int[] transactionIds)
+        public IActionResult Mine()
         {
-            var result = this.minerService.Mine(transactionIds);
+            //Need structural pattern
+            var latestBlock = nodeService.GetLatestBlock();
+            var pendingTransactions = nodeService.GetPendingTransactions();
 
-            return Ok(result);
+            var block = new BlockDTO
+            {
+                Height = latestBlock.Data.Height,
+                PreviousHash = latestBlock.Data.Hash,
+                Transactions = pendingTransactions.Data,
+                Timestamp = DateTime.UtcNow
+            };
+
+            this.minerService.Mine(block);
+
+            return Ok(block);
         }
     }
 }

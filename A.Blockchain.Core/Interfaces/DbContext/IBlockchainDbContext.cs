@@ -13,5 +13,6 @@ namespace A.Blockchain.Core.Interfaces.DbContext
         void Add<TEntity>(TEntity entity);
         void Update<TEntity>(TEntity entity);
         void Delete<TEntity>(TEntity entity) where TEntity : BaseDomainObject;
+        void DeleteAll<TEntity>(params int[] ids) where TEntity : BaseDomainObject;
     }
 }

@@ -17,7 +17,7 @@ namespace A.Blockchain.API.Controllers
         }
 
         [HttpGet]
-        [Route("/balance")]
+        [Route(nameof(WalletController.Balance))]
         public IActionResult Balance(string address)
         {
             var result = this.walletService.GetBalance(address);
@@ -26,7 +26,14 @@ namespace A.Blockchain.API.Controllers
         }
 
         [HttpPost]
-        [Route("/send")]
+        [Route(nameof(WalletController.Create))]
+        public IActionResult Create()
+        {
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route(nameof(WalletController.Send))]
         public IActionResult Send(SendModel model)
         {
             var result = this.walletService.Send(model.FromAddress, model.ToAddress, model.Amount);
@@ -35,7 +42,7 @@ namespace A.Blockchain.API.Controllers
         }
 
         [HttpPost]
-        [Route("/fund")]
+        [Route(nameof(WalletController.Fund))]
         public IActionResult Fund(FundModel model)
         {
             var result = this.walletService.Fund(model.ToAddress, model.Amount);
@@ -44,7 +51,7 @@ namespace A.Blockchain.API.Controllers
         }
 
         [HttpPost]
-        [Route("/receive")]
+        [Route(nameof(WalletController.Receive))]
         public IActionResult Receive()
         {
             return Ok();

@@ -1,11 +1,4 @@
-﻿using A.Blockchain.Core.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace A.Blockchain.Core.DTO
+﻿namespace A.Blockchain.Core.DTO.Transaction
 {
     public class TransactionDTO : DTOBase
     {

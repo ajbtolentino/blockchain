@@ -1,5 +1,6 @@
 ﻿using A.Blockchain.Core.Domain;
 using A.Blockchain.Core.DTO;
+using A.Blockchain.Core.DTO.Transaction;
 using A.Blockchain.Core.Interfaces;
 using A.Blockchain.Core.Interfaces.Repository;
 using A.Blockchain.Core.Interfaces.Service;
@@ -58,7 +59,7 @@ namespace A.Blockchain.Service
             var transaction = this.pendingTransactionRepository.Add(new Transaction
             {
                 Amount = amount,
-                From = "System",
+                From = "System-Fund",
                 To = toAddress,
                 Timestamp = DateTime.UtcNow
             });

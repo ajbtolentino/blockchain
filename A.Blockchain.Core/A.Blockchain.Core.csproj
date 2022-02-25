@@ -11,6 +11,15 @@
     <Compile Remove="Enum\**" />
     <EmbeddedResource Remove="Enum\**" />
     <None Remove="Enum\**" />
+    <None Remove="Interfaces\Handlers\" />
+    <None Remove="Interfaces\Factory\" />
+    <None Remove="DTO\Block\" />
+    <None Remove="DTO\Transaction\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\Factory\" />
+    <Folder Include="DTO\Block\" />
+    <Folder Include="DTO\Transaction\" />
+  </ItemGroup>
 </Project>

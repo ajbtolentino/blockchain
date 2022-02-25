@@ -29,6 +29,13 @@ namespace A.Blockchain.Data.Repositories
             return true;
         }
 
+        public bool DeleteAll(params int[] transactionIds)
+        {
+            this.dbContext.DeleteAll<T>(transactionIds);
+
+            return true;
+        }
+
         public T Update(T entity)
         {
             this.dbContext.Update(entity);
