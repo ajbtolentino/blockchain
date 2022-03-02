@@ -26,6 +26,11 @@ namespace A.Blockchain.Infrastructure.DbContext
             this.liteDatabase.GetCollection<TEntity>().Delete(entity.Id);
         }
 
+        public void DeleteAll<TEntity>(params int[] ids) where TEntity : BaseDomainObject
+        {
+            this.liteDatabase.GetCollection<TEntity>().DeleteMany(_ => ids.Contains(_.Id));
+        }
+
         public IQueryable<TEntity> GetAll<TEntity>()
         {
             return liteDatabase.GetCollection<TEntity>().FindAll().AsQueryable();

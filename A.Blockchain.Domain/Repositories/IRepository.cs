@@ -6,6 +6,7 @@ namespace A.Blockchain.Domain.Repositories
     {
         T Add(T entity);
         bool Delete(T entity);
+        bool DeleteAll(params int[] transactionIds);
         T Update(T entity);
 
         IEnumerable<T> GetAll();
