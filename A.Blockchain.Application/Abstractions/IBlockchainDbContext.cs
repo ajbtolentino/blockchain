@@ -8,5 +8,6 @@ namespace A.Blockchain.Application.Common.Interfaces
         void Add<TEntity>(TEntity entity);
         void Update<TEntity>(TEntity entity);
         void Delete<TEntity>(TEntity entity) where TEntity : EntityBase;
+        void DeleteAll<TEntity>(params int[] ids) where TEntity : EntityBase;
     }
 }

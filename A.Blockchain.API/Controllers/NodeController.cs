@@ -1,6 +1,4 @@
-﻿using A.Blockchain.Core.DTO;
-using A.Blockchain.Core.DTO.Block;
-using A.Blockchain.Core.Interfaces.Service;
+﻿using A.Blockchain.Application.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
