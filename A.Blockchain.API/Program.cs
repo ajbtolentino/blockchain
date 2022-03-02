@@ -1,4 +1,5 @@
 using A.Blockchain.Infrastructure.Extensions;
+using A.Blockchain.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Add dependencies
-builder.Services.UseBlockchainDependencies();
+builder.Services.AddInfrastructureDependencies();
+builder.Services.AddApplicationDependencies();
 
 var app = builder.Build();
 

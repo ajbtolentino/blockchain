@@ -1,6 +1,8 @@
 ﻿using A.Blockchain.API.Models;
-using A.Blockchain.Core.DTO;
-using A.Blockchain.Core.Interfaces.Service;
+using A.Blockchain.Application.Abstractions.Commands;
+using A.Blockchain.Application.Abstractions.Queries;
+using A.Blockchain.Application.Commands;
+using A.Blockchain.Application.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace A.Blockchain.API.Controllers
@@ -9,38 +11,43 @@ namespace A.Blockchain.API.Controllers
     [ApiController]
     public class WalletController : ControllerBase
     {
-        private readonly IWalletService walletService;
+        private readonly IQueryDispatcher queryDispatcher;
+        private readonly ICommandDispatcher commandDispatcher;
 
-        public WalletController(IWalletService walletService)
+        public WalletController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
         {
-            this.walletService = walletService;
+            this.commandDispatcher = commandDispatcher;
+            this.queryDispatcher = queryDispatcher;
         }
 
         [HttpGet]
         [Route("/balance")]
-        public IActionResult Balance(string address)
+        public async Task<IActionResult> Balance(string address)
         {
-            var result = this.walletService.GetBalance(address);
+            var result = await this.queryDispatcher.QueryAsync(new GetBalanceQuery(address));
 
             return Ok(result);
         }
 
         [HttpPost]
         [Route("/send")]
-        public IActionResult Send(SendModel model)
+        public async Task<IActionResult> Send(SendModel model)
         {
-            var result = this.walletService.Send(model.FromAddress, model.ToAddress, model.Amount);
+            await this.commandDispatcher.DispatchAsync(new SendCommand(model.FromAddress, 
+                                                                       model.ToAddress, 
+                                                                       model.Amount));
 
-            return Ok(result);
+            return Ok();
         }
 
         [HttpPost]
         [Route("/fund")]
-        public IActionResult Fund(FundModel model)
+        public async Task<IActionResult> Fund(FundModel model)
         {
-            var result = this.walletService.Fund(model.ToAddress, model.Amount);
+            await this.commandDispatcher.DispatchAsync(new FundCommand(model.ToAddress,
+                                                                       model.Amount));
 
-            return Ok(result);
+            return Ok();
         }
 
         [HttpPost]

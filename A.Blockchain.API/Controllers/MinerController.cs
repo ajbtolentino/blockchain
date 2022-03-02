@@ -1,5 +1,9 @@
-﻿using A.Blockchain.Core.Interfaces.Service;
-using Microsoft.AspNetCore.Http;
+﻿using A.Blockchain.API.Models;
+using A.Blockchain.Application.Abstractions.Commands;
+using A.Blockchain.Application.Abstractions.Queries;
+using A.Blockchain.Application.Commands;
+using A.Blockchain.Application.DTO;
+using A.Blockchain.Application.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace A.Blockchain.API.Controllers
@@ -8,18 +12,19 @@ namespace A.Blockchain.API.Controllers
     [ApiController]
     public class MinerController : ControllerBase
     {
-        private readonly IMinerService minerService;
+        private readonly ICommandDispatcher commandDispatcher;
 
-        public MinerController(IMinerService minerService)
+        public MinerController(ICommandDispatcher commandDispatcher)
         {
-            this.minerService = minerService;
+            this.commandDispatcher = commandDispatcher;
         }
 
-        [HttpPost]
         [Route("/mine")]
-        public IActionResult Mine(int[] transactionIds)
+        [HttpPost]
+        public async Task<IActionResult> Mine(MineBlockModel model)
         {
-            var result = this.minerService.Mine(transactionIds);
+            var result = await this.commandDispatcher.DispatchAsync<BlockDTO>(
+                            new MineBlockCommand(3, model.PreviousHash, model.TransactionIds));
 
             return Ok(result);
         }

@@ -1,6 +1,7 @@
-﻿using A.Blockchain.Core.DTO;
-using A.Blockchain.Core.Interfaces.Service;
-using Microsoft.AspNetCore.Http;
+﻿using A.Blockchain.Application.Abstractions.Commands;
+using A.Blockchain.Application.Abstractions.Queries;
+using A.Blockchain.Application.Commands;
+using A.Blockchain.Application.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace A.Blockchain.API.Controllers
@@ -9,47 +10,49 @@ namespace A.Blockchain.API.Controllers
     [ApiController]
     public class BlockchainController : ControllerBase
     {
-        private readonly IBlockchainService blockchainService;
+        private readonly ICommandDispatcher commandDispatcher;
+        private readonly IQueryDispatcher queryDispatcher;
 
-        public BlockchainController(IBlockchainService blockchainService)
+        public BlockchainController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
         {
-            this.blockchainService = blockchainService;
+            this.commandDispatcher = commandDispatcher;
+            this.queryDispatcher = queryDispatcher;
         }
 
         [HttpGet]
         [Route("/initialize")]
         public IActionResult Initialize()
         {
-            var data = this.blockchainService.Initialize();
+            //var data = this.commandDispatcher.Initialize();
 
-            return Ok(data);
+            return Ok();
         }
 
         [HttpGet]
         [Route("/getAllBlocks")]
-        public IActionResult GetAllBlocks()
+        public async Task<IActionResult> GetAllBlocks()
         {
-            var data = this.blockchainService.GetAllBlocks();
+            var result = await this.queryDispatcher.QueryAsync(new GetAllBlocksQuery());
 
-            return Ok(data);
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("/getAllPendingTransactions")]
-        public IActionResult GetAllPendingTransactions()
+        public async Task<IActionResult> GetAllPendingTransactions()
         {
-            var data = this.blockchainService.GetPendingTransactions();
+            var result = await this.queryDispatcher.QueryAsync(new GetPendingTransactionsQuery());
 
-            return Ok(data);
+            return Ok(result);
         }
 
         [HttpPost]
         [Route("/add")]
-        public IActionResult AddBlock(BlockDTO block)
+        public async Task<IActionResult> AddBlock(AddBlockCommand block)
         {
-            var result = this.blockchainService.AddBlock(new RequestDTO<BlockDTO>(block, string.Empty, DateTime.UtcNow));
+            await this.commandDispatcher.DispatchAsync(block);
 
-            return Ok(result);
+            return Ok();
         }
     }
 }
