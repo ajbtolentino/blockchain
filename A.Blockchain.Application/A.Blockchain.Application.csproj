@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Aggregates\" />
+    <Folder Include="Abstractions\Builders\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,4 +20,7 @@
     <ProjectReference Include="..\A.Blockchain.Domain\A.Blockchain.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Abstractions\Builders\" />
+  </ItemGroup>
 </Project>
